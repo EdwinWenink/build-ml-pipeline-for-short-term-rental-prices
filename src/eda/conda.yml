@@ -15,4 +15,3 @@ dependencies:
   - protobuf
   - pip:
       - wandb==0.10.31
-      - widgetsnbextension
