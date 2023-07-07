@@ -37,6 +37,7 @@ def go(config: DictConfig):
 
         if "download" in active_steps:
             # Download file and load in W&B
+            # NOTE this component is stored on a remote repo
             _ = mlflow.run(
                 f"{config['main']['components_repository']}/get_data",
                 "main",
@@ -73,15 +74,22 @@ def go(config: DictConfig):
                     "kl_threshold": config["data_check"]["kl_threshold"],
                     "min_price": config['etl']['min_price'],
                     "max_price": config['etl']['max_price'],
-                    "price_col": "price"
+                    "price_col": "price",
                 },
             )
 
         if "data_split" in active_steps:
-            ##################
-            # Implement here #
-            ##################
-            pass
+            # NOTE this component is stored on a remote repo
+            _ = mlflow.run(
+                f"{config['main']['components_repository']}/train_val_test_split",
+                "main",
+                parameters={
+                    "input": "clean_sample.csv:latest",
+                    "test_size": config['modeling']['test_size'],
+                    "random_seed": config['modeling']['random_seed'],
+                    "stratify_by": config['modeling']['stratify_by'],
+                },
+            )
 
         if "train_random_forest" in active_steps:
 
