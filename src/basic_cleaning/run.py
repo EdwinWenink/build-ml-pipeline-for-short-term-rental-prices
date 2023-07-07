@@ -52,6 +52,24 @@ def col_to_datetime(df: pd.DataFrame, col_name: str):
     return df
 
 
+def filter_geolocation(df: pd.DataFrame, lon_range: tuple, lat_range:tuple):
+    """
+    Only keep entries with longitude and latitude in a given range.
+    NOTE: assumes the presence of columns called "longitude" and "latitude".
+
+    Args:
+        df: input dataframe.
+        lon_range: a tuple indicating an inclusive longitude range.
+        lat_range: a tuple indicating an inclusive latitude range.
+
+    Returns:
+        dataframe filtered on geolocation.
+    """
+    idx = df['longitude'].between(*lon_range) & df['latitude'].between(*lat_range)
+    df = df[idx].copy()
+    return df
+
+
 def go(args):
 
     run = wandb.init(job_type="basic_cleaning")
@@ -68,6 +86,11 @@ def go(args):
 
     # Only keep rows with rent in the given price range
     df = remove_outliers(df, args.min_price, args.max_price, price_col='price')
+
+    # Filter out geolocations outside New York
+    lon_range = (-74.25, -73.50)
+    lat_range = (40.5, 41.2)
+    df = filter_geolocation(df, lon_range, lat_range)
 
     # Convert string dates to datetime
     df = col_to_datetime(df, col_name='last_review')
