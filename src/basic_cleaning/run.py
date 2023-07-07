@@ -85,7 +85,7 @@ def go(args):
     logger.info("Dataframe data types: %s", df.dtypes)
 
     # Only keep rows with rent in the given price range
-    df = remove_outliers(df, args.min_price, args.max_price, price_col='price')
+    df = remove_outliers(df, args.min_price, args.max_price, price_col=args.price_col)
 
     # Filter out geolocations outside New York
     lon_range = (-74.25, -73.50)
@@ -151,6 +151,13 @@ if __name__ == "__main__":
         "--max_price",
         type=float,
         help="The maximum rent price that will be included.",
+        required=True
+    )
+
+    parser.add_argument(
+        "--price_col",
+        type=str,
+        help="The name of the column containing rent prices.",
         required=True
     )
 
