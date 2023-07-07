@@ -9,6 +9,7 @@ def pytest_addoption(parser):
     parser.addoption("--kl_threshold", action="store")
     parser.addoption("--min_price", action="store")
     parser.addoption("--max_price", action="store")
+    parser.addoption("--price_col", action="store")
 
 
 @pytest.fixture(scope='session')
@@ -52,8 +53,9 @@ def kl_threshold(request):
 
     return float(kl_threshold)
 
+
 @pytest.fixture(scope='session')
-def min_price(request):
+def min_price(request) -> float:
     min_price = request.config.option.min_price
 
     if min_price is None:
@@ -61,11 +63,22 @@ def min_price(request):
 
     return float(min_price)
 
+
 @pytest.fixture(scope='session')
-def max_price(request):
+def max_price(request) -> float:
     max_price = request.config.option.max_price
 
     if max_price is None:
         pytest.fail("You must provide max_price")
 
     return float(max_price)
+
+
+@pytest.fixture(scope='session')
+def price_col(request) -> str:
+    price_col = request.config.option.price_col
+
+    if not isinstance(price_col, str):
+        pytest.fail("The price column name must be a string")
+
+    return price_col
